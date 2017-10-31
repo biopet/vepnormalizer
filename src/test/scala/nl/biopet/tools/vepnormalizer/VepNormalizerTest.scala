@@ -4,12 +4,12 @@ import java.io.File
 
 import htsjdk.tribble.TribbleException
 import htsjdk.variant.vcf.VCFFileReader
-import nl.biopet.test.BiopetTest
+import nl.biopet.utils.test.tools.ToolTest
 import org.testng.annotations.Test
 
 import scala.util.Random
 
-class VepNormalizerTest extends BiopetTest {
+class VepNormalizerTest extends ToolTest[Args] {
 
   import VepNormalizer._
 
