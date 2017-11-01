@@ -10,6 +10,7 @@ import org.testng.annotations.Test
 import scala.util.Random
 
 class VepNormalizerTest extends ToolTest[Args] {
+  def toolCommand: VepNormalizer.type = VepNormalizer
 
   import VepNormalizer._
 
