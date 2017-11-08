@@ -1,7 +1,10 @@
 package nl.biopet.tools.vepnormalizer
 
 import htsjdk.tribble.TribbleException
-import htsjdk.variant.variantcontext.writer.{AsyncVariantContextWriter, VariantContextWriterBuilder}
+import htsjdk.variant.variantcontext.writer.{
+  AsyncVariantContextWriter,
+  VariantContextWriterBuilder
+}
 import htsjdk.variant.variantcontext.{VariantContext, VariantContextBuilder}
 import htsjdk.variant.vcf._
 import nl.biopet.utils.tool.ToolCommand
@@ -26,7 +29,8 @@ object VepNormalizer extends ToolCommand[Args] {
       new VCFFileReader(input, false)
     } catch {
       case e: TribbleException.MalformedFeatureFile =>
-        logger.error("Malformed VCF file! Are you sure this isn't a VCFv3 file?")
+        logger.error(
+          "Malformed VCF file! Are you sure this isn't a VCFv3 file?")
         throw e
     }
 
@@ -35,7 +39,7 @@ object VepNormalizer extends ToolCommand[Args] {
       new VariantContextWriterBuilder()
         .setOutputFile(output)
         .setReferenceDictionary(header.getSequenceDictionary)
-        build())
+        build ())
 
     if (reader.iterator().hasNext) {
       logger.debug("Checking for CSQ tag")
@@ -50,9 +54,9 @@ object VepNormalizer extends ToolCommand[Args] {
 
       for (info <- newInfos) {
         val tmpheaderline = new VCFInfoHeaderLine(info,
-          VCFHeaderLineCount.UNBOUNDED,
-          VCFHeaderLineType.String,
-          "A VEP annotation")
+                                                  VCFHeaderLineCount.UNBOUNDED,
+                                                  VCFHeaderLineType.String,
+                                                  "A VEP annotation")
         header.addMetaDataLine(tmpheaderline)
       }
       logger.debug("Header parsing done")
@@ -96,8 +100,10 @@ object VepNormalizer extends ToolCommand[Args] {
     for (record <- reader) {
       mode match {
         case "explode" =>
-          explodeTranscripts(record, newInfos, removeCsq).foreach(vc => writer.add(vc))
-        case "standard" => writer.add(standardTranscripts(record, newInfos, removeCsq))
+          explodeTranscripts(record, newInfos, removeCsq).foreach(vc =>
+            writer.add(vc))
+        case "standard" =>
+          writer.add(standardTranscripts(record, newInfos, removeCsq))
         case _ => throw new IllegalArgumentException("Something odd happened!")
       }
       counter += 1
@@ -114,7 +120,8 @@ object VepNormalizer extends ToolCommand[Args] {
   def csqCheck(header: VCFHeader): Unit = {
     if (!header.hasInfoLine("CSQ")) {
       //logger.error("No CSQ info tag found! Is this file VEP-annotated?")
-      throw new IllegalArgumentException("No CSQ info tag found! Is this file VEP-annotated?")
+      throw new IllegalArgumentException(
+        "No CSQ info tag found! Is this file VEP-annotated?")
     }
   }
 
@@ -135,7 +142,8 @@ object VepNormalizer extends ToolCommand[Args] {
     }
     val version = VCFHeaderVersion.toHeaderVersion(format)
     if (!version.isAtLeastAsRecentAs(VCFHeaderVersion.VCF4_0)) {
-      throw new IllegalArgumentException(s"""version $version is not supported""")
+      throw new IllegalArgumentException(
+        s"""version $version is not supported""")
     }
   }
 
@@ -146,7 +154,13 @@ object VepNormalizer extends ToolCommand[Args] {
     * @return list of strings with new info fields
     */
   def parseCsq(header: VCFHeader): Array[String] = {
-    header.getInfoHeaderLine("CSQ").getDescription.split(':')(1).trim.split('|').map("VEP_" + _)
+    header
+      .getInfoHeaderLine("CSQ")
+      .getDescription
+      .split(':')(1)
+      .trim
+      .split('|')
+      .map("VEP_" + _)
   }
 
   /**
@@ -162,7 +176,8 @@ object VepNormalizer extends ToolCommand[Args] {
                          removeCsq: Boolean): Array[VariantContext] = {
     for (transcript <- parseCsq(record)) yield {
       (for (fieldId <- csqInfos.indices if transcript.isDefinedAt(fieldId);
-            value = transcript(fieldId) if value.nonEmpty) yield csqInfos(fieldId) -> value)
+            value = transcript(fieldId) if value.nonEmpty)
+        yield csqInfos(fieldId) -> value)
         .filterNot(_._2.isEmpty)
         .foldLeft(createBuilder(record, removeCsq))((builder, attribute) =>
           builder.attribute(attribute._1, attribute._2))
@@ -187,7 +202,8 @@ object VepNormalizer extends ToolCommand[Args] {
       .make()
   }
 
-  def createBuilder(record: VariantContext, removeCsq: Boolean): VariantContextBuilder = {
+  def createBuilder(record: VariantContext,
+                    removeCsq: Boolean): VariantContextBuilder = {
     if (removeCsq) new VariantContextBuilder(record).rmAttribute("CSQ")
     else new VariantContextBuilder(record)
   }

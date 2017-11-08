@@ -15,8 +15,8 @@ class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
   opt[File]('O', "OutputFile") required () valueName "<vcf>" action { (x, c) =>
     c.copy(outputVCF = x)
   } validate { x =>
-    if (!x.getName.endsWith(".vcf") && (!x.getName.endsWith(".vcf.gz")) && (!x.getName.endsWith(
-      ".bcf")))
+    if (!x.getName.endsWith(".vcf") && (!x.getName.endsWith(".vcf.gz")) && (!x.getName
+          .endsWith(".bcf")))
       failure("Unsupported output file type")
     else success
   } text "Output VCF file. Required."
