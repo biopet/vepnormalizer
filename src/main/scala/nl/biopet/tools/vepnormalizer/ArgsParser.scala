@@ -4,7 +4,8 @@ import java.io.File
 
 import nl.biopet.utils.tool.AbstractOptParser
 
-class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
+class ArgsParser(toolCommand: ToolCommand[Args])
+    extends AbstractOptParser[Args](toolCommand) {
   head(s"""|$cmdName - Parse VEP-annotated VCF to standard VCF format """)
 
   opt[File]('I', "InputFile") required () valueName "<vcf>" action { (x, c) =>
