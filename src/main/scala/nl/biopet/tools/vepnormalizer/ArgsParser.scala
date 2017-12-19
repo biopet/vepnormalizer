@@ -6,7 +6,7 @@ import nl.biopet.utils.tool.{AbstractOptParser, ToolCommand}
 
 class ArgsParser(toolCommand: ToolCommand[Args])
     extends AbstractOptParser[Args](toolCommand) {
-  head(s"""|$cmdName - Parse VEP-annotated VCF to standard VCF format """)
+  head(s"""|${toolCommand.toolName} - Parse VEP-annotated VCF to standard VCF format """)
 
   opt[File]('I', "InputFile") required () valueName "<vcf>" action { (x, c) =>
     c.copy(inputVCF = x)
