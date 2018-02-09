@@ -6,7 +6,6 @@ startYear := Some(2014)
 name := "vepnormalizer"
 biopetUrlName := "vepnormalizer"
 
-// TODO: Is it a tool?
 biopetIsTool := true
 
 mainClass in assembly := Some("nl.biopet.tools.vepnormalizer.VepNormalizer")
